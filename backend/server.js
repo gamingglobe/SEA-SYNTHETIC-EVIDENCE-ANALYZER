@@ -32,8 +32,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ── Static: uploaded files (for media playback)
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+const isVercel = process.env.VERCEL === '1';
+const uploadsDir = isVercel ? require('os').tmpdir() : path.join(__dirname, 'uploads');
+if (!isVercel && !fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 app.use('/uploads', express.static(uploadsDir));
 
 // ── Multer storage
@@ -273,8 +274,9 @@ ${data.suspiciousSegments.map((s, i) => `* **[${String(i+1).padStart(2,'0')}] ${
 * **Closing Statement**: Based on the forensic audit, this file ${data.isSynthetic ? 'contains synthetic anomalies rendering it **inadmissible** as authentic evidence' : 'passes all biometric and structural consistency checks and is **recommended** for legal proceedings'}.
 `;
 
-  const reportsDir = path.join(__dirname, '../reports');
-  if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+  const isVercel = process.env.VERCEL === '1';
+  const reportsDir = isVercel ? require('os').tmpdir() : path.join(__dirname, '../reports');
+  if (!isVercel && !fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
   const reportFilename = `report_${Date.now()}_${(fileType || 'upload').replace(/[^a-z0-9]/gi, '_')}.md`;
   fs.writeFileSync(path.join(reportsDir, reportFilename), reportMarkdown);
 
@@ -284,14 +286,19 @@ ${data.suspiciousSegments.map((s, i) => `* **[${String(i+1).padStart(2,'0')}] ${
 // ══════════════════════════════════════════════════════════════
 // Startup
 // ══════════════════════════════════════════════════════════════
-app.listen(PORT, () => {
-  console.log(`\n[SEA] Forensic Core Engine → http://localhost:${PORT}`);
-  if (API_KEY_SET) {
-    console.log('[SEA] Gemini 2.0 Flash — ONLINE ✓');
-  } else {
-    console.log('[SEA] ⚠  GEMINI_API_KEY not set in backend/.env');
-    console.log('[SEA]    Get a free key → https://aistudio.google.com/app/apikey');
-    console.log('[SEA]    Running in DEMO MODE (mock analysis)');
-  }
-  console.log('');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n[SEA] Forensic Core Engine → http://localhost:${PORT}`);
+    if (API_KEY_SET) {
+      console.log('[SEA] Gemini 2.0 Flash — ONLINE ✓');
+    } else {
+      console.log('[SEA] ⚠  GEMINI_API_KEY not set in backend/.env');
+      console.log('[SEA]    Get a free key → https://aistudio.google.com/app/apikey');
+      console.log('[SEA]    Running in DEMO MODE (mock analysis)');
+    }
+    console.log('');
+  });
+}
+
+// Export the app for Vercel Serverless Functions
+module.exports = app;

@@ -1,0 +1,14 @@
+{
+  "name": "sea-deepfake-analyzer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "multer": "^2.2.0"
+  }
+}
