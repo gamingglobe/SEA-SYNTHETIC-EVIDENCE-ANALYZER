@@ -475,6 +475,7 @@ function openSseStream(scanId, fileUrl, mediaType, file, progressBar, progressLa
       uploadedScanData = msg.data;
 
       setTimeout(() => {
+        msg.data.localObjectUrl = URL.createObjectURL(file);
         renderUploadResult(msg.data, file.name);
         openMediaLab(msg.data);
         playSfxComplete();
@@ -553,19 +554,21 @@ function openMediaLab(data) {
   currentMediaType = data.mediaType;
   mediaDuration    = data.duration || 60;
 
+  const mediaSrc = data.localObjectUrl || data.fileUrl;
+
   if (data.mediaType === 'video') {
     const p = document.getElementById('video-player');
-    p.src = data.fileUrl;
+    p.src = mediaSrc;
     document.getElementById('video-player-wrap').classList.remove('d-none');
     setupMediaPlayer(p, data);
   } else if (data.mediaType === 'audio') {
     const p = document.getElementById('audio-player');
-    p.src = data.fileUrl;
+    p.src = mediaSrc;
     document.getElementById('audio-player-wrap').classList.remove('d-none');
     setupMediaPlayer(p, data);
   } else if (data.mediaType === 'image') {
     const img = document.getElementById('image-viewer');
-    img.src = data.fileUrl;
+    img.src = mediaSrc;
     document.getElementById('image-viewer-wrap').classList.remove('d-none');
   }
 
