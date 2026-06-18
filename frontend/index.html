@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEA — Synthetic Evidence Analyzer | On-Premise Deepfake Detection</title>
+  <meta name="description" content="A local, multimodal deepfake detection platform for police cyber-cells and forensic labs. Upload audio or video evidence and detect tampering timestamps with court-admissible output.">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+
+  <!-- ====================================================
+       SECTION 1: FIXED NAVIGATION
+       ==================================================== -->
+  <nav class="nav-bar d-flex justify-between align-center px-8 border-b">
+    <div class="nav-left d-flex align-center gap-4">
+      <span class="text-mono font-bold text-lg text-primary" style="letter-spacing: 0.05em;">SEA</span>
+      <div class="wordmark-divider"></div>
+      <span class="text-display text-xs text-secondary tracking-wider font-medium text-uppercase" style="letter-spacing: 0.15em; font-size: 11px;">SYNTHETIC EVIDENCE ANALYZER</span>
+    </div>
+    <div class="nav-right d-flex align-center gap-6">
+      <a href="#docs" class="nav-link text-mono text-xs text-secondary hover-text-primary">DOCUMENTATION</a>
+      <a href="#briefing" class="nav-link text-mono text-xs text-secondary hover-text-primary">REQUEST BRIEFING</a>
+      <a href="#deploy" class="nav-btn text-mono text-xs text-bg bg-accent font-bold px-4 py-2 hover-accent-btn">DEPLOY ON-PREMISE</a>
+    </div>
+  </nav>
+
+  <!-- ====================================================
+       SECTION 2: SPLIT HERO & FORENSIC TERMINAL
+       ==================================================== -->
+  <section id="demo" class="hero-section d-grid gap-12 align-center px-8 border-b" style="grid-template-columns: 55fr 45fr;">
+    <div class="hero-left d-flex flex-col justify-center">
+      <div class="hero-eyebrow text-mono text-accent text-xs mb-2" style="font-size: 11px;">[FORENSIC INFRASTRUCTURE]</div>
+      <h1 class="hero-headline text-display text-primary font-bold mb-4">
+        The Criminal Network Moves at Machine Speed. Your Evidence Lab Shouldn't Be 30 Days Behind.
+      </h1>
+      <p class="hero-subtext text-secondary text-lg mb-6 max-w-xl">
+        Upload audio or video evidence directly. SEA scans every millisecond for synthetic splices, GAN artifacts, and phase anomalies — then marks the exact timestamps on a visual timeline.
+      </p>
+      <div class="hero-ctas d-flex flex-col gap-4 align-start w-full">
+        <a href="#upload-lab" class="hero-btn-primary text-mono bg-accent text-bg font-bold px-8 py-4 text-center hover-accent-btn">
+          UPLOAD EVIDENCE FILE &darr;
+        </a>
+        <a href="#gap" class="hero-btn-secondary text-mono text-secondary hover-text-primary px-2 py-2 text-sm">
+          Read the Threat Report &rarr;
+        </a>
+      </div>
+    </div>
+    
+    <div class="hero-right">
+      <!-- Interactive Terminal Mockup -->
+      <div class="terminal-frame">
+        <div class="terminal-header d-flex justify-between align-center border-b pb-2 mb-4">
+          <div class="d-flex align-center">
+            <span class="terminal-dot mr-2"></span>
+            <span class="text-secondary text-xs">FORENSIC CORE ENGINE v2.4</span>
+          </div>
+          <div class="text-accent text-xs" id="scan-status" style="color: var(--color-mono);">READY</div>
+        </div>
+        
+        <!-- Mode Toggle: DEMO | UPLOAD -->
+        <div class="mode-toggle d-flex gap-0 mb-4">
+          <button class="mode-tab active" id="mode-demo" data-mode="demo">DEMO FILES</button>
+          <button class="mode-tab" id="mode-upload" data-mode="upload">UPLOAD EVIDENCE</button>
+        </div>
+
+        <!-- === DEMO MODE === -->
+        <div id="panel-demo">
+          <!-- File Selector Tabs -->
+          <div class="file-selector d-flex gap-2 mb-4">
+            <button class="file-tab active" data-file="vishing">EVID-9021.wav</button>
+            <button class="file-tab" data-file="deepfake">EVID-9022.mp4</button>
+            <button class="file-tab" data-file="authentic">EVID-9023.wav</button>
+          </div>
+
+          <div class="terminal-body flex-1 d-flex flex-col justify-between">
+            <div class="mb-4">
+              <div class="text-secondary text-xs">SOURCE FILE:</div>
+              <div class="text-primary text-sm font-bold mt-1" id="term-filename">EVID-9021_VISHING_CLONE.wav</div>
+              <div class="text-secondary text-xs mt-1" id="term-file-meta">SIZE: 2.4MB | DURATION: 00:00:14 | HASH: SHA-256 (8f1c...)</div>
+            </div>
+
+            <!-- Waveform Visualizer -->
+            <div class="waveform-container d-flex align-end justify-between py-4 border-b border-t my-4" style="height: 60px;">
+              <!-- Waveform bars populated by JS -->
+            </div>
+
+            <!-- Verdict Panel -->
+            <div class="verdict-panel p-3 bg-surface-raised border-all mb-4">
+              <div class="text-secondary text-xs">CLASSIFICATION:</div>
+              <div class="text-mono-color text-base font-bold mt-1" id="term-verdict" style="color: var(--color-danger);">
+                SYNTHETIC — 94.3% SPECTRAL ANOMALY DETECTED
+              </div>
+            </div>
+
+            <!-- Forensic Evidence List -->
+            <div>
+              <div class="text-secondary text-xs mb-2">FORENSIC EVIDENCE MARKERS:</div>
+              <ul class="evidence-list text-sm text-secondary text-mono" id="term-evidence">
+                <li><span class="text-accent">[01]</span> Mel-spectrogram splice boundary detected at 2.3s</li>
+                <li><span class="text-accent">[02]</span> Phase discontinuity at pitch cycle junctions</li>
+                <li><span class="text-accent">[03]</span> Artificial formant boost in high frequency band</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="terminal-footer d-flex justify-between align-center mt-6 border-t pt-2 text-xs">
+            <div class="text-secondary">SYSTEM STATE: LOCAL // AIR-GAPPED</div>
+            <div class="d-flex gap-4">
+              <button class="scan-btn text-accent font-bold" id="diagnostic-scan-btn">[RUN DIAGNOSTIC SCAN]</button>
+              <button class="scan-btn text-secondary font-bold" id="court-report-btn" disabled style="opacity: 0.5; cursor: not-allowed;">[GENERATE COURT REPORT]</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- === UPLOAD MODE === -->
+        <div id="panel-upload" class="d-none">
+          <!-- Drop Zone -->
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="file-input" accept="video/*,audio/*,image/*" hidden>
+            <div class="upload-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div class="upload-label text-mono text-sm text-accent font-bold mt-3">DROP EVIDENCE FILE HERE</div>
+            <div class="upload-sublabel text-mono text-xs text-secondary mt-1">or <span class="text-accent" style="cursor:pointer;" id="upload-browse-link">click to browse</span></div>
+            <div class="text-mono text-xs text-secondary mt-3" style="opacity:0.6;">MP4 · MOV · AVI · MP3 · WAV · M4A · JPG · PNG · up to 300MB</div>
+          </div>
+
+          <!-- Upload Progress + Gemini Live Log (hidden initially) -->
+          <div id="upload-progress-panel" class="d-none mt-3">
+            <div class="d-flex align-center justify-between mb-2">
+              <div class="text-secondary text-xs">UPLOADING EVIDENCE:</div>
+              <div class="gemini-badge" id="gemini-badge-upload">
+                <span class="gemini-dot"></span>
+                <span>GEMINI AI ACTIVE</span>
+              </div>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="upload-progress-bar"></div>
+            </div>
+            <div class="text-mono text-xs text-accent mt-1" id="upload-progress-label">UPLOADING...</div>
+            <!-- Gemini live log -->
+            <div class="gemini-log" id="gemini-log">
+              <div class="gemini-log-line" id="gemini-log-init">&gt; INITIALIZING FORENSIC ENGINE...</div>
+            </div>
+          </div>
+
+          <!-- Upload Result (hidden initially) -->
+          <div id="upload-result-panel" class="d-none">
+            <div class="terminal-body flex-1 d-flex flex-col">
+              <div class="mb-4">
+                <div class="text-secondary text-xs">SOURCE FILE:</div>
+                <div class="text-primary text-sm font-bold mt-1" id="up-filename">—</div>
+                <div class="text-secondary text-xs mt-1" id="up-file-meta">—</div>
+              </div>
+              <!-- Verdict Panel -->
+              <div class="verdict-panel p-3 bg-surface-raised border-all mb-4">
+                <div class="text-secondary text-xs">CLASSIFICATION:</div>
+                <div class="text-base font-bold mt-1 text-mono" id="up-verdict" style="color: var(--color-danger);">—</div>
+              </div>
+              <!-- Evidence List -->
+              <div>
+                <div class="text-secondary text-xs mb-2">FORENSIC EVIDENCE MARKERS:</div>
+                <ul class="evidence-list text-sm text-secondary text-mono" id="up-evidence"></ul>
+              </div>
+            </div>
+            <div class="terminal-footer d-flex justify-between align-center mt-4 border-t pt-2 text-xs">
+              <div class="text-secondary" id="up-engine-label">SCAN COMPLETE // GEMINI AI</div>
+              <div class="d-flex gap-4">
+                <button class="scan-btn text-accent font-bold" id="up-rescan-btn">[RESCAN FILE]</button>
+                <button class="scan-btn text-accent font-bold" id="up-report-btn">[GENERATE REPORT]</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SECTION 2B: MEDIA ANALYSIS LAB (shown after upload)
+       ==================================================== -->
+  <section id="upload-lab" class="media-lab-section px-8 py-10 border-b d-none">
+    <div class="lab-header d-flex align-center justify-between mb-6">
+      <div>
+        <div class="d-flex align-center gap-3 mb-1">
+          <span class="text-accent text-mono text-xs">[EVIDENCE PLAYER]</span>
+          <span class="gemini-badge" id="gemini-badge-lab" style="display:none;">
+            <span class="gemini-dot"></span>
+            <span>POWERED BY GEMINI</span>
+          </span>
+        </div>
+        <h2 class="text-display font-bold text-xl" id="lab-title">ANALYZING: —</h2>
+        <div class="text-mono text-xs text-secondary mt-1" id="lab-summary" style="max-width:600px; line-height:1.4;"></div>
+      </div>
+      <div class="d-flex align-center gap-4">
+        <span class="scanning-badge d-none" id="scanning-badge">
+          <span class="active-pulse"></span>
+          <span class="text-mono text-xs text-danger font-bold ml-2">SCANNING</span>
+        </span>
+        <button class="scan-btn text-secondary text-xs" id="lab-close-btn">[CLOSE PLAYER]</button>
+      </div>
+    </div>
+
+    <!-- Players + Timeline grid -->
+    <div class="lab-grid">
+      <!-- Video Player (shown for video files) -->
+      <div id="video-player-wrap" class="player-panel d-none">
+        <div class="player-label text-mono text-xs text-secondary mb-2">VIDEO STREAM</div>
+        <video id="video-player" class="media-player" controls preload="metadata">
+          Your browser doesn't support video playback.
+        </video>
+      </div>
+
+      <!-- Audio Player (shown for audio files) -->
+      <div id="audio-player-wrap" class="player-panel d-none">
+        <div class="player-label text-mono text-xs text-secondary mb-2">AUDIO STREAM</div>
+        <div class="audio-viz-wrap">
+          <div class="audio-waveform-live" id="audio-waveform-live">
+            <!-- bars animated by JS -->
+          </div>
+          <audio id="audio-player" controls preload="metadata" style="width:100%; margin-top:12px;">
+            Your browser doesn't support audio playback.
+          </audio>
+        </div>
+      </div>
+
+      <!-- Image Viewer (shown for images) -->
+      <div id="image-viewer-wrap" class="player-panel d-none">
+        <div class="player-label text-mono text-xs text-secondary mb-2">IMAGE STREAM</div>
+        <img id="image-viewer" class="evidence-image" alt="Uploaded evidence">
+      </div>
+
+      <!-- Timeline & Anomaly List -->
+      <div class="timeline-panel">
+        <div class="player-label text-mono text-xs text-secondary mb-2">SUSPICIOUS SEGMENTS TIMELINE</div>
+        <div class="timeline-track-wrap">
+          <div class="timeline-track" id="timeline-track">
+            <div class="timeline-playhead" id="timeline-playhead"></div>
+            <!-- Suspicious markers injected by JS -->
+          </div>
+          <div class="d-flex justify-between text-mono text-xs text-secondary mt-1">
+            <span>00:00</span>
+            <span id="timeline-duration-label">—</span>
+          </div>
+        </div>
+
+        <div class="anomaly-list" id="anomaly-list">
+          <div class="text-secondary text-xs text-mono" style="padding:12px 0;">No anomalies detected.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ====================================================
+       SECTION 4: PROBLEM STATEMENT
+       ==================================================== -->
+  <section id="gap" class="problem-section py-16 px-8 border-b">
+    <div class="section-eyebrow text-accent text-mono text-xs uppercase mb-2">[ THE GAP ]</div>
+    <h2 class="section-headline text-display text-4xl font-bold mb-12 max-w-xl">
+      Legacy Tools Were Not Built for Synthetic Media
+    </h2>
+    
+    <div class="problem-grid d-grid gap-8" style="grid-template-columns: 2fr 1.5fr 1fr;">
+      <div class="problem-col-1 border-all p-8 d-flex flex-col justify-center bg-surface">
+        <div class="stat-num text-danger text-mono font-bold" style="font-size: 8rem; line-height: 1;">192&times;</div>
+        <p class="text-secondary text-xs mt-4 text-mono uppercase tracking-wider">
+          faster than manual efforts — the speed at which AI criminal networks operate
+        </p>
+      </div>
+      
+      <div class="problem-col-2 d-flex flex-col gap-6">
+        <div class="problem-card border-all p-6 bg-surface-raised flex-1">
+          <h3 class="text-mono text-primary text-base font-bold mb-2 uppercase tracking-wide">Multi-modal blind spot</h3>
+          <p class="text-secondary text-sm">
+            Current analysis tools evaluate one media type at a time, failing to capture coordinated multi-channel campaigns where audio transcripts, facial vectors, and metadata signatures are spliced asynchronously.
+          </p>
+        </div>
+        <div class="problem-card border-all p-6 bg-surface-raised flex-1">
+          <h3 class="text-mono text-primary text-base font-bold mb-2 uppercase tracking-wide">The black box verdict</h3>
+          <p class="text-secondary text-sm">
+            Simple percentage scores and binary tags cannot stand up to cross-examination. Prosecutors need mathematical proof, explainable error bounds, and visual indicators that can be presented in court.
+          </p>
+        </div>
+      </div>
+      
+      <div class="problem-col-3 border-all p-6 bg-surface-raised d-flex flex-col justify-between align-start">
+        <div>
+          <h3 class="text-mono text-primary text-base font-bold mb-2 uppercase tracking-wide">Air-Gap Required</h3>
+          <p class="text-secondary text-sm">
+            Sensitive criminal evidence cannot be uploaded to commercial API endpoints. Forensic data must never touch cloud infrastructure, requiring 100% local operation on secure government hardware.
+          </p>
+        </div>
+        <div class="lock-icon-container mt-6">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">
+            <rect x="5" y="11" width="14" height="10" />
+            <path d="M8 11V5H16V11" />
+            <rect x="11.5" y="14" width="1" height="4" fill="var(--color-accent)" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SECTION 5: CAPABILITIES (BENTO GRID)
+       ==================================================== -->
+  <section id="docs" class="capabilities-section py-16 px-8 border-b bg-bg">
+    <div class="section-eyebrow text-accent text-mono text-xs uppercase mb-2">[ CAPABILITIES ]</div>
+    <h2 class="section-headline text-display text-4xl font-bold mb-12 max-w-xl">
+      Local Deepfake Forensic Infrastructure
+    </h2>
+    
+    <div class="bento-grid">
+      <!-- Card A -->
+      <div class="bento-card bento-card-a">
+        <div class="d-flex flex-col justify-between h-full">
+          <div>
+            <div class="text-accent text-mono text-xs mb-2">[ CORE CLASSIFIER ]</div>
+            <h3 class="text-display text-2xl font-bold mb-4 uppercase">Multimodal Pipeline</h3>
+            <p class="text-secondary text-sm mb-6">
+              Simultaneously parses audio phase structures, video framing anomalies, and container metadata in a single synchronized pass. Resolves cross-modality splices where video files hide synthetic audio.
+            </p>
+          </div>
+          <div class="pipeline-container d-flex align-center justify-between py-4 border-all px-6 bg-surface">
+            <div class="pipeline-inputs d-flex flex-col gap-4">
+              <div class="pipeline-node border-all px-3 py-2 text-mono text-xs d-flex align-center bg-bg" style="width: 140px;">
+                <span class="terminal-dot bg-accent mr-2" style="width: 6px; height: 6px;"></span> AUDIO.wav
+              </div>
+              <div class="pipeline-node border-all px-3 py-2 text-mono text-xs d-flex align-center bg-bg" style="width: 140px;">
+                <span class="terminal-dot bg-accent mr-2" style="width: 6px; height: 6px;"></span> VIDEO.mp4
+              </div>
+              <div class="pipeline-node border-all px-3 py-2 text-mono text-xs d-flex align-center bg-bg" style="width: 140px;">
+                <span class="terminal-dot bg-accent mr-2" style="width: 6px; height: 6px;"></span> METADATA
+              </div>
+            </div>
+            <div class="pipeline-connector flex-1">
+              <div class="line-step-top-horizontal-1"></div>
+              <div class="line-step-top-vertical"></div>
+              <div class="line-straight"></div>
+              <div class="line-step-bottom-horizontal-1"></div>
+              <div class="line-step-bottom-vertical"></div>
+              <div class="signal-dot signal-1"></div>
+              <div class="signal-dot signal-2"></div>
+              <div class="signal-dot signal-3"></div>
+            </div>
+            <div class="pipeline-output">
+              <div class="pipeline-node border-all p-3 text-mono text-xs text-center bg-surface-raised" style="border-color: var(--color-accent); width: 140px;">
+                <div class="text-accent font-bold">SEA FUSION CORE</div>
+                <div class="text-secondary mt-1" style="font-size: 9px;">INTEGRITY OUTPUT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card B -->
+      <div class="bento-card bento-card-b">
+        <div>
+          <div class="text-accent text-mono text-xs mb-2">[ COURT INTEGRITY ]</div>
+          <h3 class="text-display text-lg font-bold mb-2 uppercase">Explainable Output</h3>
+          <p class="text-secondary text-sm">
+            Provides visual, court-admissible artifacts rather than simple black-box scores. Prosecutors receive physical mappings of lighting vectors and phase differences.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Card C -->
+      <div class="bento-card bento-card-c">
+        <div>
+          <div class="text-accent text-mono text-xs mb-2">[ HIGH SPEED ]</div>
+          <h3 class="text-display text-lg font-bold mb-2 uppercase">192&times; Speed Parity</h3>
+          <p class="text-secondary text-sm">
+            Leverages local tensor networks to process deepfakes in seconds. Match the weaponized generation speed of criminal distribution syndicates.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Card D -->
+      <div class="bento-card bento-card-d">
+        <div class="d-flex flex-col justify-between h-full">
+          <div>
+            <div class="text-accent text-mono text-xs mb-2">[ DATA CUSTODY ]</div>
+            <h3 class="text-display text-lg font-bold mb-2 uppercase">On-Premise Only</h3>
+            <p class="text-secondary text-sm">
+              No external API keys, no internet connection, no outbound telemetry. Functions inside your air-gapped forensic laboratory network.
+            </p>
+          </div>
+          <div class="mt-8">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" stroke-width="1.5">
+              <rect x="2" y="2" width="20" height="5" />
+              <rect x="2" y="9" width="20" height="5" />
+              <rect x="2" y="16" width="20" height="5" />
+              <circle cx="6" cy="4.5" r="0.75" fill="var(--color-accent)" />
+              <circle cx="6" cy="11.5" r="0.75" fill="var(--color-accent)" />
+              <circle cx="6" cy="18.5" r="0.75" fill="var(--color-accent)" />
+              <line x1="14" y1="4.5" x2="18" y2="4.5" />
+              <line x1="14" y1="11.5" x2="18" y2="11.5" />
+              <line x1="14" y1="18.5" x2="18" y2="18.5" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card E -->
+      <div class="bento-card bento-card-e">
+        <div class="d-flex flex-col justify-between h-full">
+          <div>
+            <div class="text-accent text-mono text-xs mb-2">[ VOCAL SIGNATURES ]</div>
+            <h3 class="text-display text-lg font-bold mb-2 uppercase">Spectral Phase Analysis</h3>
+            <p class="text-secondary text-sm">
+              Maps sub-millisecond phase disruptions in voice recordings. Detects mel-spectrogram splicing patterns common in AI voice clones.
+            </p>
+          </div>
+          <div class="spectral-spectrum d-flex align-end justify-between mt-6 bg-bg p-3 border-all" style="height: 48px;">
+            <div class="spec-bar" style="height: 20%; width: 8px; background-color: var(--color-accent-dim);"></div>
+            <div class="spec-bar" style="height: 40%; width: 8px; background-color: var(--color-accent-dim);"></div>
+            <div class="spec-bar" style="height: 80%; width: 8px; background-color: var(--color-accent);"></div>
+            <div class="spec-bar" style="height: 60%; width: 8px; background-color: var(--color-accent-dim);"></div>
+            <div class="spec-bar" style="height: 15%; width: 8px; background-color: var(--color-accent-dim);"></div>
+            <div class="spec-bar spec-bar-danger" style="height: 90%; width: 8px; background-color: var(--color-danger);"></div>
+            <div class="spec-bar" style="height: 30%; width: 8px; background-color: var(--color-accent-dim);"></div>
+            <div class="spec-bar" style="height: 70%; width: 8px; background-color: var(--color-accent-dim);"></div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Card F -->
+      <div class="bento-card bento-card-f">
+        <div>
+          <div class="text-accent text-mono text-xs mb-2">[ AUDIT PROTOCOL ]</div>
+          <h3 class="text-display text-lg font-bold mb-2 uppercase">Chain of Custody</h3>
+          <p class="text-secondary text-sm">
+            Log files stamped with cryptographically immutable hashes. Links analyst badges directly to the evidence hashes.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Card G -->
+      <div class="bento-card bento-card-g">
+        <div class="d-flex md-flex-col justify-between align-center gap-6">
+          <div class="flex-1">
+            <div class="text-danger text-mono text-xs mb-2">[ ACTIVE INVESTIGATIONS ]</div>
+            <h3 class="text-display text-lg font-bold mb-2 uppercase">Digital Arrest Prevention</h3>
+            <p class="text-secondary text-sm">
+              Performs real-time scanning of live video feeds during active cyber-hostage and extortion schemes. Instantly exposes synthetic video clones of family members or officials.
+            </p>
+          </div>
+          <div class="d-flex align-center gap-4 border-all p-3 bg-bg md-w-full" style="border-color: var(--color-danger); min-width: 250px;">
+            <span class="active-pulse"></span>
+            <div class="text-mono text-xs">
+              <span class="text-danger font-bold">LIVE SCANNERS ACTIVE</span>
+              <div class="text-secondary mt-1">INTERCEPTING PACKETS...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SECTION 6: WORKFLOW
+       ==================================================== -->
+  <section class="workflow-section py-16 px-8 bg-bg border-b">
+    <div class="section-eyebrow text-accent text-mono text-xs uppercase mb-2">[ WORKFLOW ]</div>
+    <h2 class="section-headline text-display text-4xl font-bold mb-12 max-w-xl">
+      From Seized Device to Court-Ready Report
+    </h2>
+    
+    <div class="workflow-list d-flex flex-col gap-12">
+      <div class="workflow-step position-relative py-6 d-flex md-flex-col align-start justify-between border-b">
+        <div class="ghost-num text-mono">01</div>
+        <div class="workflow-content flex-1">
+          <h3 class="text-display text-2xl font-bold mb-2 uppercase">Ingest</h3>
+          <p class="text-secondary text-sm max-w-xl">
+            Drag-and-drop raw evidence files directly into the air-gapped station. Source hashes are calculated instantly, establishing the initial chain of custody record.
+          </p>
+        </div>
+        <div class="workflow-meta text-mono text-xs text-secondary mt-2">EST. TIME: &lt; 2s // RAW BYTE READ</div>
+      </div>
+      
+      <div class="workflow-step position-relative py-6 d-flex md-flex-col align-start justify-between border-b">
+        <div class="ghost-num text-mono">02</div>
+        <div class="workflow-content flex-1">
+          <h3 class="text-display text-2xl font-bold mb-2 uppercase">Pipeline</h3>
+          <p class="text-secondary text-sm max-w-xl">
+            The audio, video, and container metadata files pass through parallel specialized detection models locally. GPU-accelerated neural networks parse spatial, temporal, and spectral domains.
+          </p>
+        </div>
+        <div class="workflow-meta text-mono text-xs text-secondary mt-2">EST. TIME: 10-45s // LOCAL TENSOR RUN</div>
+      </div>
+      
+      <div class="workflow-step position-relative py-6 d-flex md-flex-col align-start justify-between border-b">
+        <div class="ghost-num text-mono">03</div>
+        <div class="workflow-content flex-1">
+          <h3 class="text-display text-2xl font-bold mb-2 uppercase">Artifacts</h3>
+          <p class="text-secondary text-sm max-w-xl">
+            Extract visual and mathematical proof. Pinpoint exact timestamps of face swaps, lighting inconsistencies, or audio splice boundaries, rather than relying on a single vulnerability index.
+          </p>
+        </div>
+        <div class="workflow-meta text-mono text-xs text-secondary mt-2">EST. TIME: INSTANT // INDEXING DATA</div>
+      </div>
+      
+      <div class="workflow-step position-relative py-6 d-flex md-flex-col align-start justify-between">
+        <div class="ghost-num text-mono">04</div>
+        <div class="workflow-content flex-1">
+          <h3 class="text-display text-2xl font-bold mb-2 uppercase">Report</h3>
+          <p class="text-secondary text-sm max-w-xl">
+            Generate cryptographically signed, court-admissible PDF reports. Contains detailed verification indicators, model thresholds, and a SHA-256 integrity signature for the prosecutor.
+          </p>
+        </div>
+        <div class="workflow-meta text-mono text-xs text-secondary mt-2">EST. TIME: &lt; 5s // SHA-256 EXPORT</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SECTION 7: CTA / FOOTER
+       ==================================================== -->
+  <section id="deploy" class="cta-section py-16 px-8 bg-surface-raised">
+    <div id="briefing" class="cta-container d-flex md-flex-col justify-between align-center gap-8 mb-12">
+      <div class="cta-left flex-1">
+        <h2 class="text-display text-4xl font-bold mb-4">Ready to Close the 30-Day Gap?</h2>
+        <p class="text-secondary text-base max-w-lg">
+          Deploy SEA in your cyber-cell before the next digital arrest scam. Equip your forensic analysts with the capabilities needed to expose synthetic fraud instantly.
+        </p>
+      </div>
+      <div class="cta-right d-flex flex-col gap-2 md-w-full" style="min-width: 380px;">
+        <form class="cta-form d-flex md-flex-col bg-bg" id="cta-form">
+          <input type="email" required placeholder="your.badge@dept.gov" class="cta-input text-mono p-4 flex-1 text-primary bg-transparent border-0">
+          <button type="submit" class="cta-submit text-mono text-bg font-bold px-6 py-4 border-0 hover-accent-btn">
+            REQUEST BRIEFING
+          </button>
+        </form>
+        <div class="text-xs text-secondary text-mono mt-1" id="cta-feedback">
+          * ON-PREMISE B2G DEPLOYMENT ONLY. AUTHENTICATION REQUIRED.
+        </div>
+      </div>
+    </div>
+    
+    <div class="decorative-rule mb-12"></div>
+    
+    <footer id="contact" class="footer-bar d-flex md-flex-col justify-between align-center text-xs text-mono text-secondary">
+      <div>&copy; 2026 SYNTHETIC EVIDENCE ANALYZER. ALL RIGHTS RESERVED. SECURE GOVERNMENT UTILITY.</div>
+      <div class="footer-links d-flex gap-6 mt-4 md-mt-2">
+        <a href="#deploy" class="hover-text-primary">PRIVACY</a>
+        <a href="#docs" class="hover-text-primary">DOCUMENTATION</a>
+        <a href="#briefing" class="hover-text-primary">CONTACT</a>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ====================================================
+       FORENSIC REPORT MODAL
+       ==================================================== -->
+  <div id="report-modal" class="modal-overlay d-none">
+    <div class="modal-content border-all bg-surface p-8 position-relative">
+      <button class="close-btn text-mono text-secondary" id="close-report-btn">&times; CLOSE</button>
+      <div id="report-markdown-content" class="report-body text-mono text-sm py-4">
+        <!-- Markdown report will be loaded here -->
+      </div>
+      <div class="modal-actions d-flex justify-end gap-4 border-t pt-4">
+        <button class="nav-btn text-mono text-xs text-bg bg-accent font-bold px-4 py-2 hover-accent-btn" id="print-report-btn">PRINT / SAVE PDF</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
